@@ -1,0 +1,23 @@
+{
+  "author": "Jerome Touffe-Blin <jtblin@gmail.com> (http://about.me/jtblin)",
+  "name": "master-cluster",
+  "description": "A module to facilitate using node cluster and domain modules.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jtblin/master-cluster.git"
+  },
+  "main": "master-cluster.js",
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "keywords": [
+    "cluster",
+    "module",
+    "reload",
+    "error",
+    "errors",
+    "handling"
+  ],
+  "license": "BSD"
+}
