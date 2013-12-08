@@ -1,7 +1,7 @@
 {
   "author": "Jerome Touffe-Blin <jtblin@gmail.com> (http://about.me/jtblin)",
   "name": "master-cluster",
-  "description": "A module to facilitate using node cluster and domain modules.",
+  "description": "Facilitate using cluster and domain modules, live reload application in development mode on code change.",
   "version": "0.0.3",
   "dependencies": {
     "moment": "~1.6.2"
@@ -17,10 +17,13 @@
   "keywords": [
     "cluster",
     "module",
+    "live",
     "reload",
+    "restart",
     "error",
     "errors",
-    "handling"
+    "handling",
+    "watch"
   ],
   "license": "BSD"
 }
