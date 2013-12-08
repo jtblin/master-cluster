@@ -2,7 +2,10 @@
   "author": "Jerome Touffe-Blin <jtblin@gmail.com> (http://about.me/jtblin)",
   "name": "master-cluster",
   "description": "A module to facilitate using node cluster and domain modules.",
-  "version": "0.0.2",
+  "version": "0.0.3",
+  "dependencies": {
+    "moment": "~1.6.2"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/jtblin/master-cluster.git"
