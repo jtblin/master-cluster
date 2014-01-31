@@ -25,9 +25,9 @@ function start (options) {
 
   eachCluster(options.size, cluster.fork);
 
-  cluster.on('disconnect', function () {
+  cluster.on('disconnect', function (worker) {
     if (! reload) {
-      cluster.fork();
+      if (! worker.suicide) cluster.fork();
       return
     }
     if (counter > options.size * 3) {
