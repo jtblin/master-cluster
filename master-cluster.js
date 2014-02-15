@@ -14,7 +14,7 @@ function start (options) {
 
   cluster.setupMaster(options);
 
-  var reload = options.reload || process.env.NODE_ENV == 'dev', counter = 0;
+  var reload = options.reload || process.env.NODE_ENV.match(/^dev/), counter = 0;
   if (reload ) {
     reloader.reload(options);
     cluster.reset = function () {
@@ -27,7 +27,7 @@ function start (options) {
 
   cluster.on('disconnect', function (worker) {
     if (! reload) {
-      if (! worker.suicide) cluster.fork();
+      cluster.fork();
       return
     }
     if (counter > options.size * 3) {
