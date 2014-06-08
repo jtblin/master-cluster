@@ -19,7 +19,7 @@ function start (options) {
     reloader.reload(options);
     cluster.reset = function () {
       eachCluster(options.size, cluster.fork);
-      counter = 0
+      counter = 0;
     }
   }
 
@@ -28,11 +28,11 @@ function start (options) {
   cluster.on('disconnect', function (worker) {
     if (! reload) {
       cluster.fork();
-      return
+      return;
     }
     if (counter > options.size * 3) {
       console.error('Application is crashing. Waiting for file change.');
-      return
+      return;
     }
     if (counter === 0)
       setTimeout(function () {
@@ -45,7 +45,7 @@ function start (options) {
 
 function eachCluster (size, exec) {
   for (var i = 0; i < size; i++) {
-    process.nextTick(exec)
+    process.nextTick(exec);
   }
 }
 
@@ -58,19 +58,17 @@ function run () {
   for (var i = 0; i < arguments.length; i++) d.add(arguments[i]);
   d.run(function () {
     setup.run.apply(this, args);
-  })
-  setup.domain = d
+  });
 }
 
 function createHttpServer (handler, port, onShutdown) {
   var http = require('http');
   setFnHandlers (handler, onShutdown);
-  http.createServer(run).listen(port)
+  http.createServer(run).listen(port);
 }
 
 function setFnHandlers (runFn, errorFn) {
   setup.run = runFn, setup.error = errorFn;
-  return this
 }
 
 function onWorkerError (err) {
