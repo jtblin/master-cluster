@@ -69,6 +69,7 @@ function createHttpServer (handler, port, onShutdown) {
 
 function setFnHandlers (runFn, errorFn) {
   setup.run = runFn, setup.error = errorFn;
+  return this;
 }
 
 function onWorkerError (err) {
