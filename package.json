@@ -4,6 +4,7 @@
   "description": "Facilitate using cluster and domain modules, live reload application in development mode on code change.",
   "version": "0.0.7",
   "dependencies": {
+    "debug": "^2.0.0",
     "moment": "~1.6.2"
   },
   "repository": {
