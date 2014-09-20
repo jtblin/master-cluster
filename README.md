@@ -11,7 +11,7 @@ so that workers are restarted when code is changed.
 In `boot.js`:
 
     var MC = require('master-cluster')
-      , worker = require.resolve('server.js');
+      , worker = require.resolve('./server.js');
     MC.start({exec: worker});
 
 In `server.js`:
