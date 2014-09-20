@@ -8,13 +8,13 @@ function start (options) {
   if (options.isCluster === false) {
     setup = options;
     if (options.exec) require(options.exec);
-    return
+    return;
   }
   if (! options.size) options.size = require("os").cpus().length;
 
   cluster.setupMaster(options);
 
-  var reload = options.reload || process.env.NODE_ENV.match(/^dev/), counter = 0;
+  var reload = options.reload || /^dev/.test(process.env.NODE_ENV), counter = 0;
   if (reload ) {
     reloader.reload(options);
     cluster.reset = function () {
@@ -89,7 +89,8 @@ function onWorkerError (err) {
     if (cluster.worker && !cluster.worker.suicide) cluster.worker.disconnect();
 
     // stop everything
-    setup.error(err)
+    setup.error(err);
+
   } catch (er2) {
     // oh well, not much we can do at this point.
     console.error('master-cluster', 'Error closing worker down!', er2.stack);
