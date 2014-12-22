@@ -2,7 +2,7 @@
   "author": "Jerome Touffe-Blin <jtblin@gmail.com> (http://about.me/jtblin)",
   "name": "master-cluster",
   "description": "Facilitate using cluster and domain modules, live reload application in development mode on code change.",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "dependencies": {
     "debug": "^2.0.0",
     "moment": "~1.6.2"
