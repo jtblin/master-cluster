@@ -14,7 +14,7 @@ function start (options) {
 
   cluster.setupMaster(options);
 
-  var reload = options.reload || /^dev/.test(process.env.NODE_ENV), counter = 0;
+  var reload = options.reload || options.reload === false ? options.reload : /^dev/.test(process.env.NODE_ENV), counter = 0;
   if (reload ) {
     reloader.reload(options);
     cluster.reset = function () {
