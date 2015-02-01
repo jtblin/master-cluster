@@ -32,7 +32,7 @@ In `server.js`:
     });
 
     function shutdown () {
-        // cleanly close db connections and other resources
+        // optional - cleanly close db connections and other resources
     }
 
 In `app.js`:

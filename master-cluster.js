@@ -68,7 +68,7 @@ function createHttpServer (handler, port, onShutdown) {
 }
 
 function setFnHandlers (runFn, errorFn) {
-  setup.run = runFn, setup.error = errorFn;
+  setup.run = runFn, setup.error = errorFn || function () {};
   return this;
 }
 
@@ -89,7 +89,7 @@ function onWorkerError (err) {
     if (cluster.worker && !cluster.worker.suicide) cluster.worker.disconnect();
 
     // stop everything
-    setup.error(err);
+    if (typeof setup.error === 'function') setup.error(err);
 
   } catch (er2) {
     // oh well, not much we can do at this point.
