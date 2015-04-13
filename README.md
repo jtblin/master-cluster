@@ -58,6 +58,23 @@ In `server.js`:
         // cleanly close db connections and other resources
     }
 
+
+### With express
+
+```javascript
+var app = require('express')();
+var MC = require('master-cluster');
+var responseTime = require('response-time');
+
+// setup middlewares, mount routes, etc.
+app.use(responseTime({ header: 'x-response-time' }));
+app.get('/', function (req, res) {
+  res.end('Hello world');
+});
+MC.createHttpServer(app, 3000);
+console.log('Server listening on %d', 3000);
+```
+
 ### Configuration
 
 Following options can be passed to the master cluster configuration:
