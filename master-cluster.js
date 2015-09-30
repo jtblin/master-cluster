@@ -18,12 +18,12 @@ function start (options) {
   if (reload ) {
     reloader.reload(options);
     cluster.reset = function () {
-      eachCluster(options.size, cluster.fork);
+      eachCluster(options.size, cluster.fork.bind(cluster));
       counter = 0;
     }
   }
 
-  eachCluster(options.size, cluster.fork);
+  eachCluster(options.size, cluster.fork.bind(cluster));
 
   cluster.on('disconnect', function (worker) {
     if (! reload) {
