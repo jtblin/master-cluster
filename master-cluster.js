@@ -1,6 +1,9 @@
-var cluster = require("cluster")
-  , reloader = require("./reloader")
-  , setup = {};
+'use strict';
+
+var cluster = require('cluster');
+var debug = require('debug')('master-cluster');
+var reloader = require('./reloader');
+var setup = {};
 
 function start (options) {
   if (! cluster.isMaster) throw new Error('Start can only be run on master!');
@@ -10,7 +13,7 @@ function start (options) {
     if (options.exec) require(options.exec);
     return;
   }
-  if (! options.size) options.size = require("os").cpus().length;
+  if (! options.size) options.size = require('os').cpus().length;
 
   cluster.setupMaster(options);
 
@@ -31,7 +34,7 @@ function start (options) {
       return;
     }
     if (counter > options.size * 3) {
-      console.error('Application is crashing. Waiting for file change.');
+      debug('Application is crashing. Waiting for file change.');
       return;
     }
     if (counter === 0)
@@ -53,7 +56,7 @@ function run () {
   if (typeof setup.run === 'undefined') throw new Error('There is nothing to run!');
   if (typeof setup.error === 'undefined') setup.error = function () {};
 
-  var d = require("domain").create(), args = arguments;
+  var d = require('domain').create(), args = arguments;
   d.on('error', onWorkerError);
   for (var i = 0; i < arguments.length; i++) d.add(arguments[i]);
   d.run(function () {
@@ -73,7 +76,7 @@ function setFnHandlers (runFn, errorFn) {
 }
 
 function onWorkerError (err) {
-  console.error('master-cluster', 'Worker uncaught exception', err.stack);
+  debug('Worker uncaught exception\n%s', err.stack);
 
   try {
     // make sure we close down within 30 seconds
@@ -93,7 +96,7 @@ function onWorkerError (err) {
 
   } catch (er2) {
     // oh well, not much we can do at this point.
-    console.error('master-cluster', 'Error closing worker down!', er2.stack);
+    debug('Error closing worker down!\n%s', er2.stack);
   }
 }
 
