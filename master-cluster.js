@@ -23,17 +23,17 @@ function start (options) {
   if (reload ) {
     reloader.reload(options);
     cluster.reset = function () {
-      eachCluster(options.size, cluster.fork.bind(cluster));
+      eachCluster(options.size, fork);
       counter = 0;
     }
   }
 
-  eachCluster(options.size, cluster.fork.bind(cluster));
+  eachCluster(options.size, fork);
 
   cluster.on('disconnect', function (worker) {
     debug('Worker %d with pid %s disconnected', worker.id, worker.process.pid);
     if (! reload) {
-      cluster.fork();
+      fork();
       return;
     }
     if (counter > options.size * 3) {
@@ -45,7 +45,7 @@ function start (options) {
         counter = 0;
       }, 2000);
     counter++;
-    cluster.fork();
+    fork();
   });
 }
 
@@ -53,6 +53,10 @@ function eachCluster (size, exec) {
   for (var i = 0; i < size; i++) {
     process.nextTick(exec);
   }
+}
+
+function fork () {
+  cluster.fork().on('error', onWorkerError);
 }
 
 function run () {
