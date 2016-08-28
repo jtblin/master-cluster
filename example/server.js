@@ -6,7 +6,7 @@
     , http = require('http');
 
   // set the handler that will be used for all new requests
-  MC.setFnHandlers(app.index, shutdown);
+  MC.setFnHandlers(app.index, shutdown).setOptions({ logger: console });
 
   // create the server and pass MC run handler
   // each request will be wrap in a domain for exception handling

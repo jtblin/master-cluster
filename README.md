@@ -82,11 +82,24 @@ Following options can be passed to the master cluster configuration:
 - `exec`: the code to run on the cluster master
 - `size`: the number of workers to start, default is `require("os").cpus().length`
 - `reload`: `boolean`, default is `false` except when `process.env.NODE_ENV == 'dev'`
+- `logger`: optional logger for errors (must implement `error` method)
 
 Reloader specific options:
 
 - `cooldown`: number of milliseconds to wait between file changes, default is `100ms`
 - `extensions`: file extensions to watch for and reload on change, default to `js`
+
+### Method handlers
+
+- `start (options)`: start the master with cluster options
+- `run ()`: worker http handler that runs the request wrapped in the domain error handling
+- `setFnHandlers (runFn, errorFn)`: set the run and error handlers for the domain module
+- `setOptions (options)`: set the options for the workers (logger and kill timeout)
+- `createHttpServer (handler, port, onShutdown)`: create the http server and setup the run and error handlers for the domain module
+
+### Miscellaneous
+
+- `cluster`: expose the exported cluster module
 
 # Disclaimer
 

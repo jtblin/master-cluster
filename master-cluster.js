@@ -14,6 +14,7 @@ function start (options) {
     return;
   }
   if (! options.size) options.size = require('os').cpus().length;
+  setup.logger = options.logger;
 
   cluster.setupMaster(options);
 
@@ -37,7 +38,7 @@ function start (options) {
       return;
     }
     if (counter > options.size * 3) {
-      debug('Application is crashing. Waiting for file change.');
+      logError('Application is crashing. Waiting for file change.');
       return;
     }
     if (counter === 0)
@@ -47,6 +48,14 @@ function start (options) {
     counter++;
     fork();
   });
+}
+
+function logError (/* arguments */) {
+  if (setup.logger) {
+    setup.logger.error.apply(setup.logger, arguments);
+  } else {
+    debug.apply(debug, arguments);
+  }
 }
 
 function eachCluster (size, exec) {
@@ -83,8 +92,13 @@ function setFnHandlers (runFn, errorFn) {
   return this;
 }
 
+function setOptions (options) {
+  setup.logger = options.logger;
+  return this;
+}
+
 function onWorkerError (err) {
-  debug('Worker uncaught exception\n%s', err.stack);
+  logError('Worker uncaught exception\n%s', err.stack);
 
   try {
     // make sure we close down within 30 seconds
@@ -107,7 +121,7 @@ function onWorkerError (err) {
 
   } catch (er2) {
     // oh well, not much we can do at this point.
-    debug('Error closing worker down!\n%s', er2.stack);
+    logError('Error closing worker down!\n%s', er2.stack);
   }
 }
 
@@ -116,3 +130,4 @@ exports.cluster = cluster;
 exports.run = run;
 exports.createHttpServer = createHttpServer;
 exports.setFnHandlers = setFnHandlers;
+exports.setOptions = setOptions;

@@ -4,5 +4,5 @@
   var MC = require('../master-cluster')
     , worker = require.resolve('./server');
 
-  MC.start({exec: worker});
+  MC.start({exec: worker, logger: console});
 })();
