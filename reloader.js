@@ -13,7 +13,7 @@ function reload (options) {
 
   cooldown = options.cooldown || cooldown;
 
-  debug('Watcher started for extensions', rg);
+  debug('Watcher started for extensions %s', rg.toString());
   walk(path, rg);
 }
 
@@ -33,7 +33,7 @@ function walk (path, rg) {
 }
 
 function watch (path, rg) {
-  debug('Watching files in', path);
+  debug('Watching files in %s', path);
   fs.watch(path, function (event, filename) {
     if (skipFile(filename, rg)) return;
     debug('%s changed', filename);
@@ -45,10 +45,14 @@ function watch (path, rg) {
     }
     eachWorker(function (worker) {
       try {
-        debug('Killing worker', worker.id);
-        worker.kill();
+        debug('Killing worker %d', worker.id);
+        worker.disconnect();
+        var timeout = setTimeout(worker.kill.bind(worker), 3000);
+        worker.on('disconnect', clearTimeout.bind(null, timeout));
       }
-      catch (e) {}
+      catch (e) {
+        debug('Error killing worker %d: %s', worker.id, e.message);
+      }
     })
   })
 }
