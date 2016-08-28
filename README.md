@@ -89,6 +89,11 @@ Reloader specific options:
 - `cooldown`: number of milliseconds to wait between file changes, default is `100ms`
 - `extensions`: file extensions to watch for and reload on change, default to `js`
 
+Worker options:
+
+- `killTimeout`: timeout to kill the worker on uncaught exception (default 30s)
+- `logger`: optional logger for errors (must implement `error` method)
+
 ### Method handlers
 
 - `start (options)`: start the master with cluster options

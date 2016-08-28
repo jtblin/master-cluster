@@ -16,8 +16,9 @@
     console.log('Worker %d listening on %d', MC.cluster.worker.id, 3000);
   });
 
-  function shutdown (err) {
+  function shutdown (err, cb) {
     // optional - cleanly close db connections and other resources
     if (err) console.error(err);
+    cb(new Error('Boom^2'))
   }
 })();

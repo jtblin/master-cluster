@@ -93,6 +93,7 @@ function setFnHandlers (runFn, errorFn) {
 }
 
 function setOptions (options) {
+  setup.killTimeout = options.killTimeout || 30000;
   setup.logger = options.logger;
   return this;
 }
@@ -101,13 +102,12 @@ function onWorkerError (err) {
   logError('Worker uncaught exception\n%s', err.stack);
 
   try {
-    // make sure we close down within 30 seconds
+    // make sure we close down within timeout (30 seconds default)
     var killtimer = setTimeout(function() {
-      process.exit(1)
-    }, 30000);
+      if (cluster.worker && ! cluster.worker.isDead()) cluster.worker.kill();
+    }, setup.killTimeout);
     // But don't keep the process open just for that!
-    if (typeof killtimer.unref === 'function')
-      killtimer.unref();
+    if (typeof killtimer.unref === 'function') killtimer.unref();
 
     // Let the master know we're dead.  This will trigger a
     // 'disconnect' in the cluster master, and then it will fork
@@ -116,12 +116,17 @@ function onWorkerError (err) {
       cluster.worker.disconnect();
 
     // stop everything
-    if (typeof setup.error === 'function')
-      setup.error(err);
+    if (typeof setup.error === 'function') {
+      setup.error(err, function (er2) {
+        if (er2) logError('Shutdown exception\n%s', er2.stack);
+        clearTimeout(killtimer);
+        if (cluster.worker && ! cluster.worker.isDead()) cluster.worker.kill();
+      });
+    }
 
-  } catch (er2) {
+  } catch (er3) {
     // oh well, not much we can do at this point.
-    logError('Error closing worker down!\n%s', er2.stack);
+    logError('Error closing worker down!\n%s', er3.stack);
   }
 }
 
