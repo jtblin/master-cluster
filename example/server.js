@@ -2,7 +2,7 @@
   'use strict';
 
   var MC = require('../master-cluster')
-    , app = require('./app.js')
+    , app = require('./app')
     , http = require('http');
 
   // set the handler that will be used for all new requests
@@ -13,10 +13,11 @@
   // so that workers are restarted automatically on crash
   var server = http.createServer(MC.run);
   server.listen(3000, function () {
-    console.log("Listening on %d", 3000);
+    console.log('Worker %d listening on %d', MC.cluster.worker.id, 3000);
   });
 
-  function shutdown () {
+  function shutdown (err) {
     // optional - cleanly close db connections and other resources
+    if (err) console.error(err);
   }
 })();
