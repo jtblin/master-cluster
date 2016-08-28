@@ -88,6 +88,7 @@ Reloader specific options:
 
 - `cooldown`: number of milliseconds to wait between file changes, default is `100ms`
 - `extensions`: file extensions to watch for and reload on change, default to `js`
+- `path`: path to watch for change, default to current directory (`.`)
 
 Worker options:
 
