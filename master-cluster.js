@@ -21,7 +21,7 @@ function start (options) {
 
   cluster.setupMaster(options);
 
-  var counter = 0;
+  var counterReloadWorkerFails = 0;
   var reload = options.reload || options.reload === false ? options.reload : /^dev/.test(process.env.NODE_ENV);
 
   if (reload ) {
@@ -36,15 +36,18 @@ function start (options) {
       fork();
       return;
     }
-    if (counter > options.size * 3) {
+    if (counterReloadWorkerFails > options.size * 3) {
       logError('Application is crashing. Waiting for file change.');
       return;
     }
-    if (counter === 0)
+    if (counterReloadWorkerFails === 0)
+      // reset `counterReloadWorkerFails` in reload mode
+      // if there's no errors for more than 2 seconds
       setTimeout(function () {
-        counter = 0;
+        counterReloadWorkerFails = 0;
       }, 2000);
-    counter++;
+
+    counterReloadWorkerFails++;
     fork();
   });
 }
