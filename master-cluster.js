@@ -2,9 +2,13 @@
 
 var assert = require('assert');
 var cluster = require('cluster');
+var http = require('http');
+var os = require('os');
 var debug = require('debug')('master-cluster');
 var reloader = require('./reloader');
+
 var setup = {};
+var noop = function () {}
 
 function start (options) {
   assert(cluster.isMaster, 'Start can only be run on master!');
@@ -16,7 +20,7 @@ function start (options) {
     require(options.exec);
     return;
   }
-  if (! options.size) options.size = require('os').cpus().length;
+  if (! options.size) options.size = os.cpus().length;
   setup.logger = options.logger;
 
   cluster.setupMaster(options);
@@ -74,21 +78,20 @@ function run () {
   assert(cluster.isWorker, 'run can be executed only inside worker process');
   assert(typeof setup.run === 'function', 'There is nothing to run!');
 
-  if (typeof setup.error === 'undefined') setup.error = function () {};
+  if (typeof setup.error === 'undefined') setup.error = noop;
   setup.run.apply(null, args);
 }
 
 function createHttpServer (handler, port, onShutdown, onListening) {
-  var http = require('http');
   setFnHandlers (handler, onShutdown);
 
-  if (!onListening) onListening = function () {}
+  if (!onListening) onListening = noop;
   return http.createServer(run).listen(port, onListening);
 }
 
 function setFnHandlers (runFn, errorFn) {
   setup.run = runFn;
-  setup.error = errorFn || function () {};
+  setup.error = errorFn || noop;
   return this;
 }
 
