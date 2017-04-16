@@ -104,7 +104,7 @@ Worker options:
 
 ### Miscellaneous
 
-- `cluster`: expose the exported cluster module
+- `cluster`: expose node.js [cluster](https://nodejs.org/api/cluster.html) module
 
 # Disclaimer
 
