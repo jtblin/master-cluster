@@ -79,9 +79,9 @@ console.log('Server listening on %d', 3000);
 
 Following options can be passed to the master cluster configuration:
 
-- `exec`: the code to run on the cluster master
+- `exec`: file path to worker file (see `exec` option of [cluster.setupMaster](https://nodejs.org/api/cluster.html#cluster_cluster_setupmaster_settings))
 - `size`: the number of workers to start, default is `require("os").cpus().length`
-- `reload`: `boolean`, default is `false` except when `process.env.NODE_ENV == 'dev'`
+- `reload`: `boolean`, default is `false` except when `/^dev/.test(process.env.NODE_ENV)`
 - `logger`: optional logger for errors (must implement `error` method)
 
 Reloader specific options:
