@@ -78,10 +78,12 @@ function run () {
   setup.run.apply(null, args);
 }
 
-function createHttpServer (handler, port, onShutdown) {
+function createHttpServer (handler, port, onShutdown, onListening) {
   var http = require('http');
   setFnHandlers (handler, onShutdown);
-  return http.createServer(run).listen(port);
+
+  if (!onListening) onListening = function () {}
+  return http.createServer(run).listen(port, onListening);
 }
 
 function setFnHandlers (runFn, errorFn) {

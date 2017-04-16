@@ -50,7 +50,9 @@ In `server.js`:
     var MC = require('master-cluster')
       , app = require('./app.js');
 
-    MC.createHttpServer(app.index, 3000, shutdown);
+    MC.createHttpServer(app.index, 3000, shutdown, function () {
+      console.log("Listening on %d", 3000);
+    });
 
     function shutdown () {
         // cleanly close db connections and other resources
@@ -100,7 +102,7 @@ Worker options:
 - `run ()`: worker http handler that runs the request
 - `setFnHandlers (runFn, errorFn)`: set the run and error handlers
 - `setOptions (options)`: set the options for the workers (logger and kill timeout)
-- `createHttpServer (handler, port, onShutdown)`: create the http server and setup the run and error handlers
+- `createHttpServer (handler, port, onShutdown, onListening)`: create the http server and setup the run and error handlers
 
 ### Miscellaneous
 
