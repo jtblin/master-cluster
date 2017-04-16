@@ -1,12 +1,14 @@
 'use strict';
 
+var assert = require('assert');
 var cluster = require('cluster');
 var debug = require('debug')('master-cluster');
 var reloader = require('./reloader');
 var setup = {};
 
 function start (options) {
-  if (! cluster.isMaster) throw new Error('Start can only be run on master!');
+  assert(cluster.isMaster, 'Start can only be run on master!');
+
   options = options || {};
   if (options.isCluster === false) {
     setup = options;
@@ -65,7 +67,7 @@ function fork () {
 }
 
 function run () {
-  if (typeof setup.run === 'undefined') throw new Error('There is nothing to run!');
+  assert(typeof setup.run === 'function', 'There is nothing to run!');
   if (typeof setup.error === 'undefined') setup.error = function () {};
 
   var d = require('domain').create(), args = arguments;
