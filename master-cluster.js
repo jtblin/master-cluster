@@ -11,8 +11,9 @@ function start (options) {
 
   options = options || {};
   if (options.isCluster === false) {
-    setup = options;
-    if (options.exec) require(options.exec);
+    assert(options.exec, 'exec option must be specified to run in non-cluster mode');
+
+    require(options.exec);
     return;
   }
   if (! options.size) options.size = require('os').cpus().length;
@@ -67,15 +68,11 @@ function fork () {
 }
 
 function run () {
+  assert(cluster.isWorker, 'run can be executed only inside worker process');
   assert(typeof setup.run === 'function', 'There is nothing to run!');
-  if (typeof setup.error === 'undefined') setup.error = function () {};
 
-  var d = require('domain').create(), args = arguments;
-  d.on('error', onWorkerError);
-  for (var i = 0; i < arguments.length; i++) d.add(arguments[i]);
-  d.run(function () {
-    setup.run.apply(this, args);
-  });
+  if (typeof setup.error === 'undefined') setup.error = function () {};
+  setup.run.apply(null, args);
 }
 
 function createHttpServer (handler, port, onShutdown) {
