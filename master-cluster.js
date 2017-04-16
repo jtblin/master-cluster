@@ -23,10 +23,6 @@ function start (options) {
 
   if (reload ) {
     reloader.reload(options);
-    cluster.reset = function () {
-      eachCluster(options.size, fork);
-      counter = 0;
-    }
   }
 
   eachCluster(options.size, fork);
