@@ -34,6 +34,10 @@ function start (options) {
 
   eachCluster(options.size, fork);
 
+  cluster.on('fork', function (worker) {
+    debug('Worker forked, id %d', worker.id);
+  });
+
   cluster.on('disconnect', function (worker) {
     debug('Worker %d with pid %s disconnected', worker.id, worker.process.pid);
     if (! reload) {
@@ -79,7 +83,7 @@ function run () {
   assert(typeof setup.run === 'function', 'There is nothing to run!');
 
   if (typeof setup.error === 'undefined') setup.error = noop;
-  setup.run.apply(null, args);
+  setup.run.apply(null, arguments);
 }
 
 function createHttpServer (handler, port, onShutdown, onListening) {
