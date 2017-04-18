@@ -1,35 +1,42 @@
 'use strict';
 
+var assert = require('assert');
 var cluster = require('cluster');
+var http = require('http');
+var os = require('os');
 var debug = require('debug')('master-cluster');
 var reloader = require('./reloader');
+
 var setup = {};
+var noop = function () {}
 
 function start (options) {
-  if (! cluster.isMaster) throw new Error('Start can only be run on master!');
+  assert(cluster.isMaster, 'Start can only be run on master!');
+
   options = options || {};
   if (options.isCluster === false) {
-    setup = options;
-    if (options.exec) require(options.exec);
+    assert(options.exec, 'exec option must be specified to run in non-cluster mode');
+
+    require(options.exec);
     return;
   }
-  if (! options.size) options.size = require('os').cpus().length;
+  if (! options.size) options.size = os.cpus().length;
   setup.logger = options.logger;
 
   cluster.setupMaster(options);
 
-  var counter = 0;
+  var counterReloadWorkerFails = 0;
   var reload = options.reload || options.reload === false ? options.reload : /^dev/.test(process.env.NODE_ENV);
 
   if (reload ) {
     reloader.reload(options);
-    cluster.reset = function () {
-      eachCluster(options.size, fork);
-      counter = 0;
-    }
   }
 
   eachCluster(options.size, fork);
+
+  cluster.on('fork', function (worker) {
+    debug('Worker forked, id %d', worker.id);
+  });
 
   cluster.on('disconnect', function (worker) {
     debug('Worker %d with pid %s disconnected', worker.id, worker.process.pid);
@@ -37,15 +44,18 @@ function start (options) {
       fork();
       return;
     }
-    if (counter > options.size * 3) {
+    if (counterReloadWorkerFails > options.size * 3) {
       logError('Application is crashing. Waiting for file change.');
       return;
     }
-    if (counter === 0)
+    if (counterReloadWorkerFails === 0)
+      // reset `counterReloadWorkerFails` in reload mode
+      // if there's no errors for more than 2 seconds
       setTimeout(function () {
-        counter = 0;
+        counterReloadWorkerFails = 0;
       }, 2000);
-    counter++;
+
+    counterReloadWorkerFails++;
     fork();
   });
 }
@@ -69,26 +79,23 @@ function fork () {
 }
 
 function run () {
-  if (typeof setup.run === 'undefined') throw new Error('There is nothing to run!');
-  if (typeof setup.error === 'undefined') setup.error = function () {};
+  assert(cluster.isWorker, 'run can be executed only inside worker process');
+  assert(typeof setup.run === 'function', 'There is nothing to run!');
 
-  var d = require('domain').create(), args = arguments;
-  d.on('error', onWorkerError);
-  for (var i = 0; i < arguments.length; i++) d.add(arguments[i]);
-  d.run(function () {
-    setup.run.apply(this, args);
-  });
+  if (typeof setup.error === 'undefined') setup.error = noop;
+  setup.run.apply(null, arguments);
 }
 
-function createHttpServer (handler, port, onShutdown) {
-  var http = require('http');
+function createHttpServer (handler, port, onShutdown, onListening) {
   setFnHandlers (handler, onShutdown);
-  return http.createServer(run).listen(port);
+
+  if (!onListening) onListening = noop;
+  return http.createServer(run).listen(port, onListening);
 }
 
 function setFnHandlers (runFn, errorFn) {
   setup.run = runFn;
-  setup.error = errorFn || function () {};
+  setup.error = errorFn || noop;
   return this;
 }
 

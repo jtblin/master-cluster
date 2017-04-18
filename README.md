@@ -2,8 +2,7 @@
 
 master-cluster is a utility to facilitate implementing node.js core [cluster](http://nodejs.org/api/cluster.html) module
 in any project. I created this module as I use the cluster module in pretty much all my projects and wanted to
-remove the boilerplate code. It implements node.js core [domain](http://nodejs.org/api/domain.html) module
-for correct exception handling. It also provides hot reloading of files on the worker in development mode
+remove the boilerplate code. It also provides hot reloading of files on the worker in development mode
 so that workers are restarted when code is changed.
 
 ## Usage
@@ -24,8 +23,7 @@ In `server.js`:
     MC.setFnHandlers(app.index, shutdown);
 
     // create the server and pass MC run handler
-    // each request will be wrap in a domain for exception handling
-    // so that workers are restarted automatically on crash
+    // workers are restarted automatically on crash
     var server = http.createServer(MC.run);
     server.listen(3000, function () {
       console.log("Listening on %d", 3000);
@@ -52,7 +50,9 @@ In `server.js`:
     var MC = require('master-cluster')
       , app = require('./app.js');
 
-    MC.createHttpServer(app.index, 3000, shutdown);
+    MC.createHttpServer(app.index, 3000, shutdown, function () {
+      console.log("Listening on %d", 3000);
+    });
 
     function shutdown () {
         // cleanly close db connections and other resources
@@ -79,10 +79,11 @@ console.log('Server listening on %d', 3000);
 
 Following options can be passed to the master cluster configuration:
 
-- `exec`: the code to run on the cluster master
+- `exec`: file path to worker file (see `exec` option of [cluster.setupMaster](https://nodejs.org/api/cluster.html#cluster_cluster_setupmaster_settings))
 - `size`: the number of workers to start, default is `require("os").cpus().length`
-- `reload`: `boolean`, default is `false` except when `process.env.NODE_ENV == 'dev'`
+- `reload`: `boolean`, default is `false` except when `/^dev/.test(process.env.NODE_ENV)`
 - `logger`: optional logger for errors (must implement `error` method)
+- `isCluster`: pass `false` to disable `cluster` and run master-only process. Setting `exec` is required in this case
 
 Reloader specific options:
 
@@ -98,14 +99,14 @@ Worker options:
 ### Method handlers
 
 - `start (options)`: start the master with cluster options
-- `run ()`: worker http handler that runs the request wrapped in the domain error handling
-- `setFnHandlers (runFn, errorFn)`: set the run and error handlers for the domain module
+- `run ()`: worker http handler that runs the request
+- `setFnHandlers (runFn, errorFn)`: set the run and error handlers
 - `setOptions (options)`: set the options for the workers (logger and kill timeout)
-- `createHttpServer (handler, port, onShutdown)`: create the http server and setup the run and error handlers for the domain module
+- `createHttpServer (handler, port, onShutdown, onListening)`: create the http server and setup the run and error handlers
 
 ### Miscellaneous
 
-- `cluster`: expose the exported cluster module
+- `cluster`: expose node.js [cluster](https://nodejs.org/api/cluster.html) module
 
 # Disclaimer
 
