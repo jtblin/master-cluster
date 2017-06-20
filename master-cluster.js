@@ -79,7 +79,6 @@ function fork () {
 }
 
 function run () {
-  assert(cluster.isWorker, 'run can be executed only inside worker process');
   assert(typeof setup.run === 'function', 'There is nothing to run!');
 
   if (typeof setup.error === 'undefined') setup.error = noop;
