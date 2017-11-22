@@ -5,7 +5,7 @@ var fs = require('fs')
   , debug = require('debug')('master-cluster')
   , moment = require('moment')
   , cooldown = 100
-  , last = moment()
+  , last = Date.now()
   ;
 
 function reload (options) {
@@ -66,8 +66,9 @@ function eachWorker (callback) {
 }
 
 function skipFile (filename, rg) {
-  var skip = moment().diff(last) < cooldown || ! rg.test(filename);
-  if (! skip) last = moment();
+  var now = Date.now();
+  var skip = now - last < cooldown || ! rg.test(filename);
+  if (! skip) last = now;
   return skip;
 }
 
