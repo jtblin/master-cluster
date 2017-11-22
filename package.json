@@ -25,6 +25,6 @@
     "handling",
     "watch"
   ],
-  "license": "BSD",
+  "license": "BSD-2-Clause",
   "types": "master-cluster.d.ts"
 }
