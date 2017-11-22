@@ -8,7 +8,7 @@ var debug = require('debug')('master-cluster');
 var reloader = require('./reloader');
 
 var setup = {};
-var noop = function () {}
+var noop = function () {};
 
 function start (options) {
   assert(cluster.isMaster, 'Start can only be run on master!');
