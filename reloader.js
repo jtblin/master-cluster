@@ -50,7 +50,7 @@ function watch (path, rg) {
         debug('Killing worker %d', worker.id);
         worker.disconnect();
         var timeout = setTimeout(worker.kill.bind(worker), 3000);
-        worker.on('disconnect', clearTimeout.bind(null, timeout));
+        worker.on('exit', clearTimeout.bind(null, timeout));
       }
       catch (e) {
         debug('Error killing worker %d: %s', worker.id, e.message);
