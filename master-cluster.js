@@ -85,11 +85,22 @@ function run () {
   setup.run.apply(null, arguments);
 }
 
-function createHttpServer (handler, port, onShutdown, onListening) {
+function createHttpServer (handler, port, onShutdown, onListening, opt) {
   setFnHandlers (handler, onShutdown);
+  opt = opt || {
+    keepAliveTimeout: 60000, // 60s
+    connectionTimeout: 120000, // 120s
+  }
 
   if (!onListening) onListening = noop;
-  return http.createServer(run).listen(port, onListening);
+  const server = http.createServer(run).listen(port, onListening);
+  if (opt.keepAliveTimeout) {
+    server.keepAliveTimeout = opt.keepAliveTimeout;
+  }
+  if (opts.connectionTimeout) {
+    server.timeout = opt.connectionTimeout;
+  }
+  return server;
 }
 
 function setFnHandlers (runFn, errorFn) {
