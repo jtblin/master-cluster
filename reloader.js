@@ -3,7 +3,6 @@
 var fs = require('fs')
   , cluster = require('cluster')
   , debug = require('debug')('master-cluster')
-  , moment = require('moment')
   , cooldown = 100
   , last = Date.now()
   ;
